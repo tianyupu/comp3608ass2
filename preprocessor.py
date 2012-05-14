@@ -14,3 +14,15 @@ class Corpus(object):
     	path = os.path.join(self.directory, msg)
       with gzip.open(path) as msgfile:
         content = msgfile.read()
+        content_lines = content.splitlines()
+        subject, body = content_lines[0], content_lines[1:]
+# remove stop words
+# create the respective corpora
+  def _remove_stopw(self):
+    pass
+  def get_stopfname(self):
+    return
+  def get_subjectcorp(self):
+    return
+  def get_bodycorp(self):
+    return
