@@ -19,8 +19,8 @@ class Corpus(object):
   def __init__(self):
     """Create a new, empty corpus of text."""
     self.doc_count = 0
-    self.words = {}
-    _populate_stopw()
+    self.words = []
+    self._populate_stopw()
   def _populate_stopw(self):
     """A helper method to extract the stop words from the stop words file."""
     f_handle = open(self.STOPFILE, 'rU')
@@ -31,7 +31,7 @@ class Corpus(object):
     return list(self.STOPWORDS)
   def get_words(self):
     """Get all the words for this corpus."""
-    return self.words.keys()
+    return self.words
   def get_df(self, word):
     """Get the document frequency (DF) for a particular word.
     
@@ -64,3 +64,54 @@ class Corpus(object):
     	doc_freqs[fname] += 1
     else:
     	doc_freqs[fname] = 1
+
+class Word(object):
+  def __init__(self, word, fname):
+    """Create a new word object, for use in the Corpus.
+
+    Arguments:
+    word -- the actual word that this object holds
+    fname -- the name of the file that this word first appeared in
+    """
+    self.freqs = {}
+    self.word = word
+    self.freqs[fname] = 1
+  def update_freq(self, fname):
+    """Update the value of the frequencies of this word.
+
+    If the word has already been in the file, increment the counter.
+    If not, add a new entry to indicate that is word has been seen in the file
+    called fname."""
+    if fname in self.freqs:
+    	self.freqs[fname] += 1
+    else:
+    	self.freqs[fname] = 1
+  def get_df(self):
+    """Get the number of documents in the corpus that the word appears in."""
+    return len(self.freqs)
+  def get_freq(self, fname):
+    """Get the number of occurences of this word in a particular file."""
+    if fname in self.freqs:
+    	return self.freqs[fname]
+    else:
+    	return 0
+  def get_word(self):
+    """Get the actual word that this object holds."""
+    return self.word
+  def get_filenames(self):
+    """Returns a list of the filenames that this word appears in."""
+    return self.freqs.keys()
+  def __repr__(self):
+    return self.word
+  def __str__(self):
+    return self.word
+
+def df_select(corpus):
+  selected = []
+  lowest = 0
+  highest = 0
+  for word in corpus.get_words():
+  	pass
+
+def tf_idf():
+  pass
