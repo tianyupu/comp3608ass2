@@ -95,11 +95,11 @@ class Word(object):
     return self.word
   def __eq__(self, other):
     if self.word == other.get_text():
-    	return True
+      return True
     return False
   def __ne__(self, other):
     if self.word != other.get_text():
-    	return True
+      return True
     return False
 
 class WordList(object):
@@ -107,8 +107,8 @@ class WordList(object):
     self.words = {}
   def add_word(self, word, fname):
     if word in self.words:
-    	word_obj = self.words[word]
-    	word_obj.update_freq(fname)
+      word_obj = self.words[word]
+      word_obj.update_freq(fname)
     else:
       word_obj = Word(word, fname)
       self.words[word] = word_obj
@@ -116,7 +116,7 @@ class WordList(object):
     return self.words
   def get_word(self, text):
     if text in self.words:
-    	return self.words[text]
+      return self.words[text]
     return None
 
 def df_select(corpus):
