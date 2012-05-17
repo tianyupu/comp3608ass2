@@ -25,7 +25,7 @@ class Corpus(object):
     """A helper method to extract the stop words from the stop words file."""
     f_handle = open(self.STOPFILE, 'rU')
     for word in f_handle.readlines():
-    	self.STOPWORDS.add(word)
+      self.STOPWORDS.add(word)
   def get_stopwords(self):
     """Return the set of stop words used as a Python list."""
     return list(self.STOPWORDS)
@@ -36,11 +36,10 @@ class Corpus(object):
     """Get the document frequency (DF) for a particular word.
     
     If the word is not found, return 0."""
-    word = word.lower()
     if word in self.words:
-    	return len(self.words[word])
+      return word.get_df()
     else:
-    	return 0
+      return 0
   def add(self, text, fname):
     """Add a string of text to the corpus by first splitting it into features
     defined by WORD_PAT, and then removing stop words.
@@ -48,10 +47,10 @@ class Corpus(object):
     Takes a string as its argument."""
     for match in re.finditer(self.WORD_PATT, text):
       if match:
-      	word = match.group(0)
+        word = match.group(0)
         if word in self.STOPWORDS:
-        	continue
-      	self._add_word(word, fname)
+          continue
+        self._add_word(word, fname)
   def _add_word(self, word, fname):
     """A helper method to add a word to the corpus. The word must be a string.
     """
@@ -59,11 +58,12 @@ class Corpus(object):
     if word in self.words:
       doc_freqs = self.words[word]
     else:
-    	self.words[word] = {}
+      word_obj = Word(word, fname)
+      self.words.append(word_obj)
     if fname in doc_freqs:
-    	doc_freqs[fname] += 1
+      doc_freqs[fname] += 1
     else:
-    	doc_freqs[fname] = 1
+      doc_freqs[fname] = 1
 
 class Word(object):
   def __init__(self, word, fname):
@@ -83,18 +83,18 @@ class Word(object):
     If not, add a new entry to indicate that is word has been seen in the file
     called fname."""
     if fname in self.freqs:
-    	self.freqs[fname] += 1
+      self.freqs[fname] += 1
     else:
-    	self.freqs[fname] = 1
+      self.freqs[fname] = 1
   def get_df(self):
     """Get the number of documents in the corpus that the word appears in."""
     return len(self.freqs)
   def get_freq(self, fname):
     """Get the number of occurences of this word in a particular file."""
     if fname in self.freqs:
-    	return self.freqs[fname]
+      return self.freqs[fname]
     else:
-    	return 0
+      return 0
   def get_word(self):
     """Get the actual word that this object holds."""
     return self.word
@@ -105,13 +105,21 @@ class Word(object):
     return self.word
   def __str__(self):
     return self.word
+  def __eq__(self, other):
+    if self.word == other.get_word():
+    	return True
+    return False
+  def __ne__(self, other):
+    if self.word != other.get_word():
+    	return True
+    return False
 
 def df_select(corpus):
   selected = []
   lowest = 0
   highest = 0
   for word in corpus.get_words():
-  	pass
+    pass
 
 def tf_idf():
   pass
