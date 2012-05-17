@@ -19,7 +19,7 @@ class Corpus(object):
   def __init__(self):
     """Create a new, empty corpus of text."""
     self.doc_count = 0
-    self.words = []
+    self.words = WordList()
     self._populate_stopw()
   def _populate_stopw(self):
     """A helper method to extract the stop words from the stop words file."""
@@ -31,13 +31,14 @@ class Corpus(object):
     return list(self.STOPWORDS)
   def get_words(self):
     """Get all the words for this corpus."""
-    return self.words
+    return self.words.get_all()
   def get_df(self, word):
     """Get the document frequency (DF) for a particular word.
     
     If the word is not found, return 0."""
-    if word in self.words:
-      return word.get_df()
+    word_obj = self.words.get_word(word)
+    if word_obj:
+      return word_obj.get_df()
     else:
       return 0
   def add(self, text, fname):
@@ -50,20 +51,7 @@ class Corpus(object):
         word = match.group(0)
         if word in self.STOPWORDS:
           continue
-        self._add_word(word, fname)
-  def _add_word(self, word, fname):
-    """A helper method to add a word to the corpus. The word must be a string.
-    """
-    word = word.lower()
-    if word in self.words:
-      doc_freqs = self.words[word]
-    else:
-      word_obj = Word(word, fname)
-      self.words.append(word_obj)
-    if fname in doc_freqs:
-      doc_freqs[fname] += 1
-    else:
-      doc_freqs[fname] = 1
+        self.words.add_word(word, fname)
 
 class Word(object):
   def __init__(self, word, fname):
@@ -95,8 +83,8 @@ class Word(object):
       return self.freqs[fname]
     else:
       return 0
-  def get_word(self):
-    """Get the actual word that this object holds."""
+  def get_text(self):
+    """Get the actual word that this object holds, as a string."""
     return self.word
   def get_filenames(self):
     """Returns a list of the filenames that this word appears in."""
@@ -106,13 +94,30 @@ class Word(object):
   def __str__(self):
     return self.word
   def __eq__(self, other):
-    if self.word == other.get_word():
+    if self.word == other.get_text():
     	return True
     return False
   def __ne__(self, other):
-    if self.word != other.get_word():
+    if self.word != other.get_text():
     	return True
     return False
+
+class WordList(object):
+  def __init__(self):
+    self.words = {}
+  def add_word(self, word, fname):
+    if word in self.words:
+    	word_obj = self.words[word]
+    	word_obj.update_freq(fname)
+    else:
+      word_obj = Word(word, fname)
+      self.words[word] = word_obj
+  def get_all(self):
+    return self.words
+  def get_word(self, text):
+    if text in self.words:
+    	return self.words[text]
+    return None
 
 def df_select(corpus):
   selected = []
