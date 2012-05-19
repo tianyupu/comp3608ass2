@@ -144,27 +144,30 @@ def preprocess(source_dir):
   return subj_corp, body_corp
 
 def df_select(corpus, max_no):
-  df_vals = {}
-  selected = []
-  count = 0
+#  df_vals = {}
+#  selected = []
+#  count = 0
+#  for word in corpus.get_words():
+#    df = word.get_df()
+#    if df in df_vals:
+#      df_vals[df].append(word)
+#    else:
+#      df_vals[df] = [word]
+#  for df_val in sorted(df_vals, reverse=True):
+#    df_vals[df_val].sort()
+#    while df_vals[df_val]:
+#      if count < max_no:
+#        word = df_vals[df_val].pop()
+#        selected.append(word)
+#        count += 1
+#      else:
+#        return sorted(selected)
+  df_vals = []
   for word in corpus.get_words():
-    df = word.get_df()
-    if df in df_vals:
-      df_vals[df].append(word)
-    else:
-      df_vals[df] = [word]
-  for df_val in sorted(df_vals, reverse=True):
-    df_vals[df_val].sort()
-    while df_vals[df_val]:
-      if count < max_no:
-        word = df_vals[df_val].pop()
-        selected.append(word)
-        count += 1
-      else:
-        return sorted(selected)
-#    df_vals.append((corpus.get_df(word), corpus.get_word(word)))
-#  df_vals.sort(cmp=lambda x,y:cmp(x[0],y[0]), reverse=True)
-#  return df_vals[:max_no]
+    df_vals.append((word.get_df(), word))
+  df_vals.sort(cmp=lambda x,y:cmp(x[0],y[0]), reverse=True)
+  df_list = [w[1] for w in df_vals[:max_no]]
+  return df_list
 
 def write_dataset(df_list, src_dir, sav_name):
   nfeatures = len(df_list)
