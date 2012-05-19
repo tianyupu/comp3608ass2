@@ -160,7 +160,7 @@ def df_select(corpus, max_no):
         selected.append(word)
         count += 1
       else:
-        return selected
+        return sorted(selected)
 #    df_vals.append((corpus.get_df(word), corpus.get_word(word)))
 #  df_vals.sort(cmp=lambda x,y:cmp(x[0],y[0]), reverse=True)
 #  return df_vals[:max_no]
