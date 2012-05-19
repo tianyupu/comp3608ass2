@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 import re
+import os, os.path, sys
+import gzip
 
 class Corpus(object):
   """A class to represent a corpus of text.
@@ -24,14 +26,14 @@ class Corpus(object):
   def _populate_stopw(self):
     """A helper method to extract the stop words from the stop words file."""
     f_handle = open(self.STOPFILE, 'rU')
-    for word in f_handle.readlines():
+    for word in f_handle.read().splitlines():
       self.STOPWORDS.add(word)
   def get_stopwords(self):
     """Return the set of stop words used as a Python list."""
     return list(self.STOPWORDS)
   def get_words(self):
     """Get all the words for this corpus."""
-    return self.words.get_all()
+    return self.words.get_words()
   def get_df(self, word):
     """Get the document frequency (DF) for a particular word.
     
@@ -112,14 +114,30 @@ class WordList(object):
     else:
       word_obj = Word(word, fname)
       self.words[word] = word_obj
-  def get_all(self):
-    return self.words
+  def get_words(self):
+    return self.words.keys()
   def get_word(self, text):
     if text in self.words:
       return self.words[text]
     return None
 
-def df_select(corpus):
+def preprocess(source_dir):
+  subj_corp = Corpus()
+  body_corp = Corpus()
+
+  src_files = os.listdir(source_dir)
+  for f in src_files:
+    path = os.path.join(source_dir, f)
+    src_f = gzip.open(path)
+    #with gzip.open(path) as src_f:
+    content = src_f.read()
+    content_lines = content.split('\n', 1)
+    subj, body = content_lines[0].strip(), content_lines[1].strip()
+    subj_corp.add(subj, f)
+    body_corp.add(body, f)
+  return subj_corp, body_corp
+
+def df_select(corpus, max_no):
   selected = []
   lowest = 0
   highest = 0
