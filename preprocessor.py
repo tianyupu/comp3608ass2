@@ -154,6 +154,7 @@ def df_select(corpus, max_no):
     else:
       df_vals[df] = [word]
   for df_val in sorted(df_vals, reverse=True):
+    df_vals[df_val].sort()
     while df_vals[df_val]:
       if count < max_no:
         word = df_vals[df_val].pop()
