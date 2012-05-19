@@ -171,7 +171,7 @@ def write_dataset(df_list, src_dir, sav_name):
   header_list.append('class')
   header_str = ','.join(header_list) + '\n'
 
-  src_files = os.listdir(src_dir)
+  src_files = sorted(os.listdir(src_dir))
   collection_size = len(src_files)
   weights = []
   for f in src_files:
