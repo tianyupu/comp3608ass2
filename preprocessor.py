@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
 import re
+import os, os.path, sys
+import gzip
+from math import log10, sqrt
 
 class Corpus(object):
   """A class to represent a corpus of text.
@@ -19,25 +22,29 @@ class Corpus(object):
   def __init__(self):
     """Create a new, empty corpus of text."""
     self.doc_count = 0
-    self.words = []
+    self.words = WordList()
     self._populate_stopw()
   def _populate_stopw(self):
     """A helper method to extract the stop words from the stop words file."""
     f_handle = open(self.STOPFILE, 'rU')
-    for word in f_handle.readlines():
+    for word in f_handle.read().splitlines():
       self.STOPWORDS.add(word)
   def get_stopwords(self):
     """Return the set of stop words used as a Python list."""
     return list(self.STOPWORDS)
   def get_words(self):
     """Get all the words for this corpus."""
-    return self.words
+    return self.words.get_words()
+  def get_word(self, word):
+    """Return the word object corresponding to the specified word."""
+    return self.words.get_word(word)
   def get_df(self, word):
     """Get the document frequency (DF) for a particular word.
     
     If the word is not found, return 0."""
-    if word in self.words:
-      return word.get_df()
+    word_obj = self.words.get_word(word)
+    if word_obj:
+      return word_obj.get_df()
     else:
       return 0
   def add(self, text, fname):
@@ -50,20 +57,7 @@ class Corpus(object):
         word = match.group(0)
         if word in self.STOPWORDS:
           continue
-        self._add_word(word, fname)
-  def _add_word(self, word, fname):
-    """A helper method to add a word to the corpus. The word must be a string.
-    """
-    word = word.lower()
-    if word in self.words:
-      doc_freqs = self.words[word]
-    else:
-      word_obj = Word(word, fname)
-      self.words.append(word_obj)
-    if fname in doc_freqs:
-      doc_freqs[fname] += 1
-    else:
-      doc_freqs[fname] = 1
+        self.words.add_word(word, fname)
 
 class Word(object):
   def __init__(self, word, fname):
@@ -95,8 +89,8 @@ class Word(object):
       return self.freqs[fname]
     else:
       return 0
-  def get_word(self):
-    """Get the actual word that this object holds."""
+  def get_text(self):
+    """Get the actual word that this object holds, as a string."""
     return self.word
   def get_filenames(self):
     """Returns a list of the filenames that this word appears in."""
@@ -106,20 +100,112 @@ class Word(object):
   def __str__(self):
     return self.word
   def __eq__(self, other):
-    if self.word == other.get_word():
-    	return True
+    if self.word == other.get_text():
+      return True
     return False
   def __ne__(self, other):
-    if self.word != other.get_word():
-    	return True
+    if self.word != other.get_text():
+      return True
     return False
 
-def df_select(corpus):
-  selected = []
-  lowest = 0
-  highest = 0
-  for word in corpus.get_words():
-    pass
+class WordList(object):
+  def __init__(self):
+    self.words = {}
+  def add_word(self, word, fname):
+    if word in self.words:
+      word_obj = self.words[word]
+      word_obj.update_freq(fname)
+    else:
+      word_obj = Word(word, fname)
+      self.words[word] = word_obj
+  def get_words(self):
+    return self.words.values()
+  def get_word(self, text):
+    if text in self.words:
+      return self.words[text]
+    return None
 
-def tf_idf():
-  pass
+def preprocess(source_dir):
+  subj_corp = Corpus()
+  body_corp = Corpus()
+
+  src_files = os.listdir(source_dir)
+  for f in src_files:
+    path = os.path.join(source_dir, f)
+    src_f = gzip.open(path)
+    #with gzip.open(path) as src_f:
+    content = src_f.read()
+    content_lines = content.split('\n', 1)
+    subj, body = content_lines[0].strip(), content_lines[1].strip()
+    subj = subj.lstrip('Subject: ')
+    subj_corp.add(subj, f)
+    body_corp.add(body, f)
+    src_f.close()
+  return subj_corp, body_corp
+
+def df_select(corpus, max_no):
+#  df_vals = {}
+#  selected = []
+#  count = 0
+#  for word in corpus.get_words():
+#    df = word.get_df()
+#    if df in df_vals:
+#      df_vals[df].append(word)
+#    else:
+#      df_vals[df] = [word]
+#  for df_val in sorted(df_vals, reverse=True):
+#    df_vals[df_val].sort()
+#    while df_vals[df_val]:
+#      if count < max_no:
+#        word = df_vals[df_val].pop()
+#        selected.append(word)
+#        count += 1
+#      else:
+#        return sorted(selected)
+  df_vals = []
+  for word in corpus.get_words():
+    df_vals.append((word.get_df(), word))
+  df_vals.sort(cmp=lambda x,y:cmp(x[0],y[0]), reverse=True)
+  df_list = [w[1] for w in df_vals[:max_no]]
+  return df_list
+
+def write_dataset(df_list, src_dir, sav_name):
+  nfeatures = len(df_list)
+  header_list = ['f%d' % x for x in xrange(1,nfeatures+1)]
+  header_list.append('class')
+  header_str = ','.join(header_list) + '\n'
+
+  src_files = sorted(os.listdir(src_dir))
+  collection_size = len(src_files)
+  weights = []
+  for f in src_files:
+    row = []
+    for word_obj in df_list:
+      row.append(str(cos_norm(word_obj, f, df_list, collection_size)))
+    if 'spmsg' in f:
+      row.append('spam')
+    else:
+      row.append('nonspam')
+    row_str = ','.join(row)
+    weights.append(row_str)
+  weight_str = '\n'.join(weights)
+
+  out_f = open(sav_name, 'w')
+  out_f.write(header_str+weight_str)
+  out_f.close()
+
+def tf_idf(word, fname, collection_size):
+  # tfidf(t_k, d_j) = #(t_k, d_j) * log(|Tr| / #Tr(t_k))
+  tf_idf = word.get_freq(fname) * log10(float(collection_size)/word.get_df())
+  return tf_idf
+
+def cos_norm(word, fname, words, collection_size):
+  numerator = tf_idf(word, fname, collection_size)
+  denom = 0.0
+  for word in words:
+    denom += tf_idf(word, fname, collection_size) ** 2
+  if denom == 0:
+    weight = 0
+  else:
+    weight = numerator / sqrt(denom)
+  return weight
