@@ -22,14 +22,31 @@ Email Classification}
 
 \section{Introduction}
 \subsection{Aims}
-To classify emails into one of two classes: spam and non-spam by implementing the Naive Bayes machine learning algorithm using relative frequencies of individual words appearing in the texts. The performance of the classifier is evaluated through 10-fold cross validation and then compared with Weka's implenetation of Naive Bayes and several other classification algorithmns[footnote with link to weka].
+To classify emails into one of two classes: spam and non-spam by implementing the 
+Naive Bayes machine learning algorithm using relative frequencies of individual 
+words appearing in the texts. The performance of the classifier is evaluated through 
+10-fold cross validation and then compared with Weka's implementation of Naive Bayes 
+and several other classification algorithms\footnote{http://cs.waikato.ac.nz/ml/weka/}.
 
 \subsection{Why is this study important?}
-The amount of digital information is growing at an increasing rate and it becomes increasingly difficult to search for information. Therefore, it is important to accurately classify the huge number of documents. To classify texts by creating rules specific to that field or text type requires expert knowledge would be costly and impractical. In comparison, the method explored here is completely general and can be used to classify texts from any area, not just emails into spam or non-spam (although fine-tuning of parameters will be necessary to maximise accuracy).
+The amount of digital information is growing at an increasing rate and it becomes 
+increasingly difficult to search for information. Therefore, it is important to 
+accurately classify the huge number of documents. To classify texts by creating 
+rules specific to that field or text type requires expert knowledge would be costly 
+and impractical. In comparison, the method explored here is completely general and 
+can be used to classify texts from any area, not just emails into spam or non-spam 
+(although fine-tuning of parameters will be necessary to maximise accuracy).
 
 \section{Data Preprocessing}
 \subsection{Procedure}
-The LingSpam emails are split into two corpora: one containing the text of the subject and the other containing the text of the body. Individual words are extracted from each corpus, stopwords and punctuation are removed and document frequency of the words calculated. In each corpus the top 200 words by document frequency are selected as features and their values for each document is calculated using tf-idf weighting[footnote here explaining formula] and then normalised using cosine normalisation[footnote here].
+The LingSpam emails are split into two corpora: one containing the text of the 
+subject and the other containing the text of the body. Individual words are extracted 
+from each corpus, stopwords and punctuation are removed and document frequency of 
+the words calculated. In each corpus the top 200 words by document frequency are 
+selected as features and their values for each document is calculated using tf-idf 
+weighting[footnote here explaining formula] and then normalised using cosine 
+normalisation[footnote here].
+
 \subsection{Results}
 [number of words for each corpus before and after removing stop words]
 [top 100 words in each corpus and their df score]
