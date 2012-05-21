@@ -32,16 +32,26 @@ The amount of digital information is growing at an increasing rate and it become
 The LingSpam emails are split into two corpora: one containing the text of the subject and the other containing the text of the body. Individual words are extracted from each corpus, stopwords and punctuation are removed and document frequency of the words calculated. In each corpus the top 200 words by document frequency are selected as features and their values for each document is calculated using tf-idf weighting[footnote here explaining formula] and then normalised using cosine normalisation[footnote here].
 \subsection{Results}
 [number of words for each corpus before and after removing stop words]
+\begin{tabular}{ | l | l | l | }
+\hline
+Corpus & \# Words before removing stopwords & \# Words after removing stopwords\\ \hline
+Subject & 1234 & 123  \\ \hline
+Body & 1234 & 123 \\
+\hline
+\end{tabular}
 [top 100 words in each corpus and their df score]
 
 [does the selection make sense given the task?]
 [are the two lits similar? (DF scores for subject corpus lower because less text)]
 
 \section{Results and Discussion}
+Stratification: each class is represented with approximately equal proportions in both data sets (training and testing)
+Cross validation: split data into 10 subsets, build classifier from 9 subsets, training on remaining subset.
+
 \subsection{Findings}
 \subsection{Discussion}
 \subsubsection{Comparisons}
-
+Should perform paired t-test here
 \section{Extension}
 
 \section{Conclusions and Next Steps}
