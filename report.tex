@@ -25,7 +25,7 @@ Email Classification}
 To classify emails into one of two classes: spam and non-spam by implementing the 
 Naive Bayes machine learning algorithm using relative frequencies of individual 
 words appearing in the texts. The performance of the classifier is evaluated through 
-10-fold cross validation and then compared with Weka's implementation of Naive Bayes 
+ten-fold cross validation and then compared with Weka's implementation of Naive Bayes 
 and several other classification algorithms\footnote{http://cs.waikato.ac.nz/ml/weka/}.
 
 \subsection{Why is this study important?}
@@ -39,13 +39,27 @@ can be used to classify texts from any area, not just emails into spam or non-sp
 
 \section{Data Preprocessing}
 \subsection{Procedure}
-The LingSpam emails are split into two corpora: one containing the text of the 
-subject and the other containing the text of the body. Individual words are extracted 
-from each corpus, stopwords and punctuation are removed and document frequency of 
-the words calculated. In each corpus the top 200 words by document frequency are 
-selected as features and their values for each document is calculated using tf-idf 
-weighting[footnote here explaining formula] and then normalised using cosine 
-normalisation[footnote here].
+In order to be able to read the files, the Python \verb=gzip= module was used to
+decompress the text format.
+The LingSpam emails were split into two corpora: one containing the text of the 
+subject and the other containing the text of the body. Individual words were extracted 
+from each corpus, stopwords and punctuation removed and document frequency of 
+the words calculated. In each corpus the top 200 words by document frequency were 
+selected as features and then each feature was assigned a weighting using the
+term frequency-inverse document frequency formula explained in \cite{sebastiani}.
+These tf-idf scores are normalised to between 0 and 1 using the cosine normalisation
+also described in \cite{sebastiani} and saved as two CSV files, one for each corpus.
+
+\subsection{Preprocessing results}
+Initially, there were 1830 words in the subject corpus. 892 of these were removed using
+the stop word list
+\footnote{http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a11-smart-stop-list/english.stop},
+leaving 938 that made up the corpus.
+In the body corpus, there were 153851 words, 133922 of which were removed, leaving 19929
+words in the corpus.
+
+The top 100 words for each corpus, based on their DF (document frequency, or the number
+of documents in the collection that the word appeared in) score, are shown below.
 
 \subsection{Results}
 [number of words for each corpus before and after removing stop words]

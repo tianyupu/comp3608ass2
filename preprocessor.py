@@ -23,6 +23,7 @@ class Corpus(object):
     """Create a new, empty corpus of text."""
     self.doc_count = 0
     self.words = WordList()
+    self.removed = []
     self._populate_stopw()
   def _populate_stopw(self):
     """A helper method to extract the stop words from the stop words file."""
@@ -32,6 +33,8 @@ class Corpus(object):
   def get_stopwords(self):
     """Return the set of stop words used as a Python list."""
     return list(self.STOPWORDS)
+  def get_removed(self):
+    return self.removed
   def get_words(self):
     """Get all the words for this corpus."""
     return self.words.get_words()
@@ -56,6 +59,7 @@ class Corpus(object):
       if match:
         word = match.group(0)
         if word in self.STOPWORDS:
+          self.removed.append(word)
           continue
         self.words.add_word(word, fname)
 
