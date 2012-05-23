@@ -51,26 +51,25 @@ These tf-idf scores are normalised to between 0 and 1 using the cosine normalisa
 also described in \cite{sebastiani} and saved as two CSV files, one for each corpus.
 
 \subsection{Preprocessing results}
-Initially, there were 1830 words in the subject corpus. 892 of these were removed using
-the stop word list
-\footnote{http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a11-smart-stop-list/english.stop},
-leaving 938 that made up the corpus.
-In the body corpus, there were 153851 words, 133922 of which were removed, leaving 19929
-words in the corpus.
-
-The top 100 words for each corpus, based on their DF (document frequency, or the number
-of documents in the collection that the word appeared in) score, are shown below.
-
-\subsection{Results}
-[number of words for each corpus before and after removing stop words]
+The numer of words before and after stopword removal
+\footnote{Stopword list courtesy of
+http://jmlr.csail.mit.edu/papers/volume5/lewis04a/a11-smart-stop-list/english.stop},
+ are shown in the table below: \\\\
 \begin{tabular}{ | l | l | l | }
 \hline
-Corpus & \# Words before removing stopwords & \# Words after removing stopwords\\ \hline
-Subject & 1234 & 123  \\ \hline
-Body & 1234 & 123 \\
+Corpus & Words before stopword removal & Words after stopword removal\\ \hline
+Subject & 1830 & 938  \\ \hline
+Body & 153851 & 19929 \\ \hline
+\end{tabular} \\\\
+The top 100 words for each corpus, based on their DF (document frequency, or the number
+of documents in the collection that the word appeared in) score, are shown below. \\\\
+\begin{tabular}{ | l | l || l | l | }
 \hline
-\end{tabular}
-[top 100 words in each corpus and their df score]
+\multicolumn{2}{| c |}{Subject}  & \multicolumn{2}{| c |}{Body} \\ \hline
+Word & Document Frequency & Word & Document Frequency\\ \hline
+testword & 1234 & testword1 & 12345\\ \hline
+testword2 & 234 & testword3 & 15\\ \hline
+\end{tabular} \\\\
 
 [does the selection make sense given the task?]
 [are the two lits similar? (DF scores for subject corpus lower because less text)]
