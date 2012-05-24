@@ -65,10 +65,108 @@ The top 100 words for each corpus, based on their DF (document frequency, or the
 of documents in the collection that the word appeared in) score, are shown below. \\\\
 \begin{tabular}{ | l | l || l | l | }
 \hline
-\multicolumn{2}{| c |}{Subject}  & \multicolumn{2}{| c |}{Body} \\ \hline
+\multicolumn{2}{| c ||}{Corpus: Subject}  & \multicolumn{2}{| c |}{Corpus: Body} \\ \hline
 Word & Document Frequency & Word & Document Frequency\\ \hline
-testword & 1234 & testword1 & 12345\\ \hline
-testword2 & 234 & testword3 & 15\\ \hline
+sum & 30 & information & 205\\ 
+summary & 26 & language & 192\\ 
+language & 21 & mail & 183\\ 
+free & 20 & university & 179\\ 
+disc & 19 & time & 178\\ 
+english & 19 & list & 171\\ 
+query & 18 & address & 165\\ 
+linguistics & 15 & english & 159\\ 
+sex & 13 & http & 156\\ 
+words & 12 & linguistics & 156\\ 
+opposites & 12 & people & 146\\ 
+book & 10 & send & 146\\ 
+method & 9 & free & 144\\ 
+mail & 9 & make & 140\\ 
+comparative & 9 & email & 133\\ 
+correction & 8 & number & 128\\ 
+ob & 8 & work & 128\\ 
+program & 7 & www & 122\\ 
+qs & 7 & languages & 119\\ 
+million & 7 & find & 118\\ 
+syntax & 7 & fax & 116\\ 
+email & 7 & order & 108\\ 
+announcement & 7 & call & 103\\ 
+armey & 6 & form & 101\\ 
+call & 6 & research & 100\\ 
+slip & 6 & linguistic & 99\\ 
+st & 6 & state & 99\\ 
+internet & 6 & world & 98\\ 
+japanese & 6 & years & 98\\ 
+part & 6 & subject & 98\\ 
+german & 6 & contact & 97\\ 
+dick & 6 & de & 96\\ 
+speaker & 6 & money & 94\\ 
+workshop & 6 & word & 91\\ 
+money & 6 & message & 91\\ 
+business & 6 & ll & 89\\ 
+lang & 6 & receive & 88\\ 
+chinese & 5 & phone & 88\\ 
+resources & 5 & check & 88\\ 
+word & 5 & good & 87\\ 
+list & 5 & interested & 86\\ 
+languages & 5 & day & 86\\ 
+native & 5 & year & 86\\ 
+grammar & 5 & working & 85\\ 
+research & 5 & case & 85\\ 
+spanish & 5 & include & 85\\ 
+needed & 5 & ve & 84\\ 
+nglish & 5 & based & 84\\ 
+linguist & 5 & note & 83\\ 
+software & 5 & home & 83\\ 
+hey & 5 & part & 83\\ 
+time & 5 & made & 83\\ 
+omparative & 4 & mailing & 81\\ 
+address & 4 & including & 81\\ 
+great & 4 & type & 80\\ 
+fwd & 4 & web & 79\\ 
+intuitions & 4 & give & 79\\ 
+information & 4 & place & 79\\ 
+banning & 4 & program & 79\\ 
+american & 4 & date & 78\\ 
+phonetics & 4 & line & 78\\ 
+request & 4 & special & 78\\ 
+web & 4 & days & 77\\ 
+secrets & 4 & internet & 76\\ 
+conference & 4 & back & 76\\ 
+systems & 4 & service & 75\\ 
+read & 4 & american & 75\\ 
+programs & 4 & full & 74\\ 
+summer & 4 & system & 74\\ 
+www & 4 & business & 74\\ 
+obs & 4 & ac & 73\\ 
+pig & 4 & today & 73\\ 
+synthetic & 3 & interest & 72\\ 
+teaching & 3 & remove & 72\\ 
+dutch & 3 & questions & 72\\ 
+fall & 3 & john & 71\\ 
+school & 3 & found & 70\\ 
+linguists & 3 & related & 70\\ 
+video & 3 & site & 69\\ 
+french & 3 & linguist & 69\\ 
+change & 3 & usa & 69\\ 
+credit & 3 & read & 68\\ 
+adjectives & 3 & point & 68\\ 
+addresses & 3 & text & 68\\ 
+names & 3 & ago & 67\\ 
+live & 3 & week & 67\\ 
+counting & 3 & book & 67\\ 
+mac & 3 & cost & 66\\ 
+youthese & 3 & dear & 66\\ 
+policy & 3 & making & 66\\ 
+decimal & 3 & simply & 65\\ 
+dialect & 3 & question & 65\\ 
+books & 3 & offer & 63\\ 
+profit & 3 & received & 63\\ 
+millions & 3 & general & 63\\ 
+care & 3 & data & 62\\ 
+misc & 3 & ca & 62\\ 
+reference & 3 & important & 62\\ 
+lists & 3 & summary & 61\\ 
+released & 3 & long & 61\\
 \end{tabular} \\\\
 
 [does the selection make sense given the task?]
@@ -79,6 +177,15 @@ Stratification: each class is represented with approximately equal proportions i
 Cross validation: split data into 10 subsets, build classifier from 9 subsets, training on remaining subset.
 
 \subsection{Findings}
+\begin{tabular}{ | l | l || l | l | }
+\hline
+\multicolumn{2}{| c ||}{Corpus: Subject}  & \multicolumn{2}{| c |}{Corpus: Body} \\ \hline
+Classifier & Accuracy[\%] & Classifier & Accuracy[\%]\\ \hline
+ZeroR & 12 & ZeroR & 34\\
+OneR &  56 & OneR & 78\\
+\hline
+\end{tabular} \\\\
+
 \subsection{Discussion}
 \subsubsection{Comparisons}
 Should perform paired t-test here
