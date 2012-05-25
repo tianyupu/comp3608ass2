@@ -49,7 +49,7 @@ class Corpus(object):
 
   def get_df(self, word):
     """Get the document frequency (DF) for a particular word. The DF is the
-    number of documents in the collection in which the word appears in
+    number of documents in the collection in which the word appears in.
     
     If the word is not found, return 0."""
     word_obj = self.words.get_word(word)
@@ -82,6 +82,9 @@ class Word(object):
     self.freqs = {}
     self.word = word
     self.freqs[fname] = 1
+    self.cls_count = {'spam': 0, 'nonspam': 0}
+    
+    self.update_clscount(fname)
 
   def update_freq(self, fname):
     """Update the value of the frequencies of this word.
@@ -94,9 +97,45 @@ class Word(object):
     else:
       self.freqs[fname] = 1
 
+  def update_clscount(self, fname):
+    """Update the frequency of this word in either the spam or nonspam category
+    for the purposes of implementing categorical proportional difference (CPD)
+    feature selection."""
+    if 'spmsg' in fname:
+      self.cls_count['spam'] += 1
+    else:
+      self.cls_count['nonspam'] += 1
+
+  def get_clscount(self, cls):
+    return self.cls_count[cls]
+
   def get_df(self):
     """Get the number of documents in the corpus that the word appears in."""
     return len(self.freqs)
+
+  def get_cpd(self):
+    """Return the categorical proportional difference of this word in the
+    collection.
+
+    The values of the CPD are in the range (-1,1]. Values close to -1 indicate
+    that the word occurs in a roughly equal # of documents in all categories.
+    A value of 1 indicates that the word appears in documents of only 1 category.
+
+    CPD(w) = max_i{CPD(w, c_i)}
+    CPD(w, c) = (A-B)/(A+B)
+    where A is the # of times w and c occur together,
+    B is the # of times w occurs without category c"""
+    highest = -1000
+    for category in self.cls_count:
+      A = self.get_clscount(category)
+      if category == 'spam':
+        B = self.get_clscount('nonspam')
+      else:
+        B = self.get_clscount('spam')
+      cpd = float(A-B)/(A+B)
+      if cpd > highest:
+        highest = cpd
+    return highest
 
   def get_freq(self, fname):
     """Get the number of occurences of this word in a particular file."""
@@ -182,8 +221,13 @@ def preprocess(source_dir):
     src_f.close()
   return subj_corp, body_corp
 
-def df_select(corpus, max_no):
+def feature_select(corpus, method, max_no):
   """Select the top max_no features from the given corpus.
+  The top max_no number of features are selected using the specified method.
+
+  method can be:
+  'df' -- for document frequency (DF) selection
+  'cpd' -- for categorical proportional difference (CPD) selection
   
   Returns a list of Word objects."""
 #  df_vals = {}
@@ -204,21 +248,24 @@ def df_select(corpus, max_no):
 #        count += 1
 #      else:
 #        return sorted(selected)
-  df_vals = []
+  vals = []
   for word in corpus.get_words():
-    df_vals.append((word.get_df(), word))
-  df_vals.sort(cmp=lambda x,y:cmp(x[0],y[0]), reverse=True)
-  df_list = [w[1] for w in df_vals[:max_no]]
-  return df_list
+    if method == 'df':
+      vals.append((word.get_df(), word))
+    elif method == 'cpd':
+      vals.append((word.get_cpd(), word))
+  vals.sort(cmp=lambda x,y:cmp(x[0],y[0]), reverse=True)
+  feat_list = [w[1] for w in vals[:max_no]]
+  return feat_list
 
-def write_dataset(df_list, src_dir, sav_name):
+def write_dataset(feat_list, src_dir, sav_name):
   """Write the dataset for the given list of features.
 
   Arguments:
-  df_list -- the list of features selected from df_select()
+  feat_list -- the list of features selected from feature_select()
   src_dir -- the source directory of files that we want to calculate weights for
   sav_name -- the name of the output file"""
-  nfeatures = len(df_list)
+  nfeatures = len(feat_list)
   header_list = ['f%d' % x for x in xrange(1,nfeatures+1)]
   header_list.append('class')
   header_str = ','.join(header_list) + '\n'
@@ -228,8 +275,8 @@ def write_dataset(df_list, src_dir, sav_name):
   weights = []
   for f in src_files:
     row = []
-    for word_obj in df_list:
-      row.append(str(cos_norm(word_obj, f, df_list, collection_size)))
+    for word_obj in feat_list:
+      row.append(str(cos_norm(word_obj, f, feat_list, collection_size)))
     if 'spmsg' in f:
       row.append('spam')
     else:
