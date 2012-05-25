@@ -48,7 +48,8 @@ class Corpus(object):
     return self.words.get_word(word)
 
   def get_df(self, word):
-    """Get the document frequency (DF) for a particular word.
+    """Get the document frequency (DF) for a particular word. The DF is the
+    number of documents in the collection in which the word appears in
     
     If the word is not found, return 0."""
     word_obj = self.words.get_word(word)
