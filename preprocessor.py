@@ -5,6 +5,8 @@ import os, os.path, sys
 import gzip
 from math import log10, sqrt
 
+from porter import PorterStemmer
+
 class Corpus(object):
   """A class to represent a corpus of text.
 
@@ -37,6 +39,7 @@ class Corpus(object):
     return list(self.STOPWORDS)
 
   def get_removed(self):
+    """Return the list of words removed by the stop word removal."""
     return self.removed
 
   def get_words(self):
@@ -58,17 +61,20 @@ class Corpus(object):
     else:
       return 0
 
-  def add(self, text, fname):
+  def add(self, text, fname, stem=False):
     """Add a string of text to the corpus by first splitting it into features
     defined by WORD_PAT, and then removing stop words.
 
     Takes a string as its argument."""
     for match in re.finditer(self.WORD_PATT, text):
       if match:
-        word = match.group(0)
+        word = match.group(0).lower()
         if word in self.STOPWORDS:
           self.removed.append(word)
           continue
+        if stem:
+          p = PorterStemmer()
+          word = p.stem(word, 0, len(word)-1)
         self.words.add_word(word, fname)
 
 class Word(object):
@@ -200,8 +206,10 @@ class WordList(object):
       return self.words[text]
     return None
 
-def preprocess(source_dir):
+def preprocess(source_dir, stem=False):
   """Preprocess the source files in the directory source_dir.
+  If stem=True (default False), then the words are stemmed using the Porter
+  Stemmer.
 
   Returns the two corpora as a 2-tuple."""
   subj_corp = Corpus()
@@ -216,8 +224,8 @@ def preprocess(source_dir):
     subj, body = content_lines[0].strip(), content_lines[1].strip()
     subj = subj.lstrip('Subject: ') # strip away the word subject
     # add the contents of the file just read to the corpus
-    subj_corp.add(subj, f)
-    body_corp.add(body, f)
+    subj_corp.add(subj, f, stem)
+    body_corp.add(body, f, stem)
     src_f.close()
   return subj_corp, body_corp
 

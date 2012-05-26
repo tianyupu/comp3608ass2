@@ -8,7 +8,7 @@ if __name__ == '__main__':
   BODY_FNAME = 'body.csv'
 
   directory = sys.argv[1]
-  subj_corp, body_corp = preprocess(directory)
+  subj_corp, body_corp = preprocess(directory, False)
   nfeatures = int(sys.argv[2]) # no. features to select
   subj_sel = feature_select(subj_corp, 'df', nfeatures)
   body_sel = feature_select(body_corp, 'df', nfeatures)
