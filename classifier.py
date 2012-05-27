@@ -32,6 +32,7 @@ class Classifier(object):
   def train(self):
     """Train the classifier using the training file given at classifier creation."""
     f_handle = open(self.training_file, 'rU')
+    print self.training_file
     # populate the classifier with the feature names
     headers = f_handle.readline().strip().split(',') # read first line & split on the commas
     for i in xrange(len(headers)):
@@ -96,7 +97,7 @@ class Classifier(object):
     attr_val1, attr_val2, ... , attr_valn, class
     where attr_val 1 to n are the values of the features, and class is either 'spam'
     or 'nonspam'"""
-    expected = example.strip().split(',')[-1] # the last line is the expected result
+    expected = example.strip().split(',')[-1] # the last feature is the expected result
     actual = self.classify(example)
     if actual == expected:
       return True
@@ -148,17 +149,19 @@ class Feature(object):
     Calculates the standard deviation if it hasn't been calculated, else just
     returns the stored value."""
     if self.stdevs[cls] == 0:
-      temp_sum = 0
+      temp_sum = 0.0
       for value in self.values:
         temp_sum += (value-self.means[cls])**2
-      n = self.cls_count[cls]
-      self.stdevs[cls] = 1.0/(n-1) * temp_sum
+      sample_count = float(len(self.values))
+      self.stdevs[cls] = math.sqrt(float(temp_sum)/(sample_count-1))
     return self.stdevs[cls]
 
 def norm_pdf(x, mean, stdev):
   """Implements the probability distribution function defined by a given mean
   and standard deviation.
   Used to classify examples with numerical attributes."""
+  if stdev == 0:
+    return 1
   coefft = 1.0/(stdev*math.sqrt(2*math.pi))
   exponent = -((x-mean)**2)/(2*stdev**2)
-  return coefft * math.e**exponent
+  return coefft * math.exp(exponent)

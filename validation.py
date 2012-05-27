@@ -44,8 +44,9 @@ def cross_validation(csv_fname, folds):
         for line in validation_set:
             if classifier.test_example(line.strip()):
                 correct += 1
-        print float(correct)/len(validation_set)
-        results.append(correct/len(validation_set))
+        accuracy = float(correct)*100/len(validation_set)
+        print "accuracy: " + str(accuracy) +"%"
+        results.append(accuracy)
     return sum(results)/folds
                 
 def get_validationsets(lines, folds):
