@@ -46,7 +46,7 @@ def cross_validation(csv_fname, folds):
     accuracy = float(correct)*100/len(validation_set)
     print "Accuracy: " + str(accuracy) +"%"
     results.append(accuracy)
-    print "Overall accuracy: " + str(results.append(accuracy))
+  print "Overall accuracy: " + str(results.append(accuracy))
   return sum(results)/folds
               
 def get_validationsets(lines, folds):
