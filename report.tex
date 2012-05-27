@@ -100,8 +100,14 @@ part & 6 & subject & 98\\
 german & 6 & contact & 97\\ 
 dick & 6 & de & 96\\ 
 speaker & 6 & money & 94\\ 
-workshop & 6 & word & 91\\ 
-money & 6 & message & 91\\ 
+workshop & 6 & word & 91\\
+money & 6 & message & 91\\ \hline 
+\end{tabular}
+
+\begin{tabular}{ | l | l || l | l | }
+\hline
+\multicolumn{2}{| c ||}{Corpus: Subject}  & \multicolumn{2}{| c |}{Corpus: Body} \\ \hline
+Word & Document Frequency & Word & Document Frequency\\ \hline
 business & 6 & ll & 89\\ 
 lang & 6 & receive & 88\\ 
 chinese & 5 & phone & 88\\ 
@@ -136,8 +142,15 @@ systems & 4 & service & 75\\
 read & 4 & american & 75\\ 
 programs & 4 & full & 74\\ 
 summer & 4 & system & 74\\ 
-www & 4 & business & 74\\ 
-obs & 4 & ac & 73\\ 
+www & 4 & business & 74\\ \hline
+\end{tabular}
+
+
+\begin{tabular}{ | l | l || l | l | }
+\hline
+\multicolumn{2}{| c ||}{Corpus: Subject}  & \multicolumn{2}{| c |}{Corpus: Body} \\ \hline
+Word & Document Frequency & Word & Document Frequency\\ \hline
+obs & 4 & ac & 73\\
 pig & 4 & today & 73\\ 
 synthetic & 3 & interest & 72\\ 
 teaching & 3 & remove & 72\\ 
@@ -166,34 +179,71 @@ care & 3 & data & 62\\
 misc & 3 & ca & 62\\ 
 reference & 3 & important & 62\\ 
 lists & 3 & summary & 61\\ 
-released & 3 & long & 61\\
+released & 3 & long & 61\\ \hline
 \end{tabular} \\\\
 
-[does the selection make sense given the task?]
-[are the two lits similar? (DF scores for subject corpus lower because less text)]
-
+The DF scores are lower for the subject corpus by a factor of about 15-20, which reflects the proportionately smaller size of the subject corpus: there are fewer words, so the document frequencies are much lower. The lists are somewhat similar, with 26 terms in common.\\
+The counts for the subject corpus seem quite low: most words have a document frequency of fewer than 10.
 \section{Results and Discussion}
-Stratification: each class is represented with approximately equal proportions in both data sets (training and testing)
-Cross validation: split data into 10 subsets, build classifier from 9 subsets, training on remaining subset.
 
 \subsection{Findings}
 \begin{tabular}{ | l | l || l | l | }
 \hline
 \multicolumn{2}{| c ||}{Corpus: Subject}  & \multicolumn{2}{| c |}{Corpus: Body} \\ \hline
 Classifier & Accuracy[\%] & Classifier & Accuracy[\%]\\ \hline
-ZeroR & 12 & ZeroR & 34\\
-OneR &  56 & OneR & 78\\
+ZeroR & 67 & ZeroR & 67\\
+OneR &  70 & OneR & 82\\
+1-NN & 79 & 1-NN & 79\\
+3-NN & 74 & 3-NN & 88\\
+NB & 68 & NB & 92\\
+DT & 67 & DT & 92\\
+MLP & 78 & MLP & 96\\
+SVM & 81 & SVM & 96\\
+MyNB & 70 & MyNB & 93\\
 \hline
 \end{tabular} \\\\
 
 \subsection{Discussion}
+To evaluate the accuracy of the classifiers, 10-fold stratified cross-validation is used and then compared to the Weka implementation of Naive Bayes and several other classification algorithms also with 10-fold stratified cross-validation. The results are tabulated above. The stratified cross-validation is performed on the feature values, which are the normalised weighted tf-idf scores of each top 200 word by document frequency. To simplify computation, these feature values are not recalculated for each fold.\\
+
+As a result, the feature values of the training data will be influenced by the validation data. This difference would not be significant, as the size of the validation data is 9 times smaller, hence its contribution to any given word's document frequency would be 9 times smaller as well. The effect of this is the classifier might perform slightly better than the case where the feature scores are calculated from only the training data. The above comparisons are still valid, as the Weka data input also consists of the same feature scores, therefore having a similar accuracy bias.\\
+
 \subsubsection{Comparisons}
-Should perform paired t-test here
+The accuracy of Naive Bayes and Weka's Naive Bayes are very similar for both the body and subject corpora. This is expected, as both implementations are performing training and validation on the same transformed data. There is a small difference of about 1\% accuracy between Weka's and our implementation of Naive Bayes. This variation is because Weka performed its own stratified cross-validation by generating its own randomised stratified subsets.\\
+
+The prediction accuracy on the subject and body corpora vary significantly. The body corpus has much more text than the subject corpus, which effectively means a larger sample size. A larger sample size results in a smaller variance and a smaller mean squared error of the estimate. This is reflected in the empirical result when Naive Bayes is run on body corpus resulting in an accuracy of 94\% compared to 70\% on the subject corpus. In addition, all other classification algorithms performed as well or better on the body corpus. As the amount of text increases we note the simpler algorithms such as 1-Rule and k-NN are not as accurate as statistical algorithms such as Naive Bayes and decision tree learning. \\
+
+For the subject corpus, despite having lower accuracies across all the classifiers (not counting Zero Rule), the statistical algorithms, Naive Bayes and DT scored particularly low; not much better than the Zero Rule baseline, because of the effectively reduced sample size and hence increased error variance. On the other hand, the geometric classifiers such as Support Vector Machine and 1-Nearest Neigbour algorithms performed much better, achieving accuracies of around 80\%, suggesting the classes are highly linearly separable in the 200-dimension feature space. \\
 \section{Extension}
+Stemming and another feature selection method, Categorical Proportional Difference (CPD) are implemented as the extension. 
+\subsection{Stemming}
+[definition of stemming] The simple solution, using a suffix list will yeild results with a low accuracy. For instance, if \emph{wand} and \emph{wander} occur in the document, the suffix \emph{er} will get erronously stemmed, as it is not a suffix, but part of the stem. Conversely in the case of \emph{probe} and \emph{probate}, despite having the same stem, the words have quite different meanings and should not be stemmed. In light of this, the implementation of stemming used is the Porter Stemming Algorithm. General lexicographical rules are devised to progressively remove suffixes from words. \\
+There are few cases the algorith does not cover such as \emph{indices} and \emph{index}, but these cases are sufficiently rare in real vocabularies to not warrant the specific rules. The results from stratified 10-fold cross validation are shown below and is compared with the earlier Naive Bayes result from above.\\
+
+\begin{tabular}{ | l | l | l | }
+\hline
+Corpus & Accuracy[\%] & Accuracy after stemming[\%]\\ \hline
+Subject & 70 & 80  \\ \hline
+Body & 93 & 94 \\ \hline
+\end{tabular} \\\\
+
+There is a significant increase in accuracy for the subject corpora and a marginal increase in the body corpus (and a corresponding accuracy increase in Weka's implementation of Naive Bayes). Stemming removes correlation between the factors by combining them. For example, in this report, the occurence of the word \emph{stem} is highly correlated with the occurence of the word \emph{stemming}, if one word appears in a document, it is likely the other word would appear also. Such a factor would act as a confounding factor and violate the independence of factors assumption inherent in Naive Bayes.
+
+\subsection{CPD}
+\begin{tabular}{ | l | l | l | }
+\hline
+Corpus & Accuracy[\%] & Accuracy after CPD[\%]\\ \hline
+Subject & 70 & 80  \\ \hline
+Body & 93 & 94 \\ \hline
+\end{tabular} \\\\
 
 \section{Conclusions and Next Steps}
+The Naive Bayes algorithm was able to classify emails into the two classes spam or nonspam very well with an accuracy of 93\% using only the text of the body. Similar results for other classification algorithms, especially 1-Nearest Neighbour and Support Vector Machine suggest the two classes are linearly separate in the 200-dimensional feature space. The algorith performs much worse on the subject corpus because there is much less text from which to build the model and to to make a prediction.\\
+Further investigation may be made into the effect of varying the number of selected features and varying the number of emails used for training and validation on the prediction accuracy. We did not synthesise the estimates for body and subject to produce an overall estimate for the whole email. Combining estimates from the body and subject and assigning weights to each (the body should have a higher weight as it is much more accurate) would form a more accurate classifier if the estimates are uncorrelated.
 
 \section{Reflection}
+Over the course of this assignment, I was able to solve(predict with a high degree of accuracy) a deceptively simple real-world problem through the application of machine learning algorithms. I was impressed how the algorithms I implemented (Naive Bayes, stemming and CPD) can easily be adapted to make predictions for any text classification problem without any domain-specific knowledge. Even more generally, Naive Bayes can be used on any sort of regression problem involving any number of explanatory variables; numeric, categorical or some combination thereof (though some variable selection and transformation must be performed in some cases to ensure factors are roughly orthogonal).
+
 
 \bibliographystyle{plainnat}
 \bibliography{bib}
