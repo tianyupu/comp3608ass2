@@ -46,8 +46,9 @@ def cross_validation(csv_fname, folds):
     accuracy = float(correct)*100/len(validation_set)
     print "Accuracy: " + str(accuracy) +"%"
     results.append(accuracy)
-  print "Overall accuracy: " + str(results.append(accuracy))
-  return sum(results)/folds
+  overall_accuracy = sum(results)/folds
+  print "Overall accuracy: " + str(overall_accuracy)
+  return overall_accuracy
               
 def get_validationsets(lines, folds):
   """Returns a randomly stratified n-fold sample of a list of lines"""

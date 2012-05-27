@@ -44,5 +44,5 @@ if __name__ == '__main__':
   cross_validation("stem_"+BODY_FNAME, 10)
   cross_validation("cpd_"+SUBJ_FNAME, 10)
   cross_validation("cpd_"+BODY_FNAME, 10)
-  cross_validation("cpd_stem"+SUBJ_FNAME, 10)
-  cross_validation("cpd_stem"+BODY_FNAME, 10)
+  cross_validation("cpd_stem_"+SUBJ_FNAME, 10)
+  cross_validation("cpd_stem_"+BODY_FNAME, 10)
