@@ -41,14 +41,14 @@ can be used to classify texts from any area, not just emails into spam or non-sp
 \subsection{Procedure}
 In order to be able to read the files, the Python \verb=gzip= module was used to
 decompress the text format.
-The LingSpam emails were split into two corpora: one containing the text of the 
+The \emph{LingSpam} emails were split into two corpora: one containing the text of the 
 subject and the other containing the text of the body. Individual words were extracted 
 from each corpus, stopwords and punctuation removed and document frequency of 
 the words calculated. In each corpus the top 200 words by document frequency were 
 selected as features and then each feature was assigned a weighting using the
-term frequency-inverse document frequency formula explained in \cite{sebastiani}.
+\emph{term frequency-inverse document frequency} formula explained in \footnote{Sebastiani: http://doi.acm.org/10.1145/505282.505283}.
 These tf-idf scores are normalised to between 0 and 1 using the cosine normalisation
-also described in \cite{sebastiani} and saved as two CSV files, one for each corpus.
+also described in \footnote{Sebastiani: http://doi.acm.org/10.1145/505282.505283} and saved as two CSV files, one for each corpus.
 
 \subsection{Preprocessing results}
 The numer of words before and after stopword removal
@@ -204,9 +204,9 @@ MyNB & 70 & MyNB & 93\\
 \end{tabular} \\\\
 
 \subsection{Discussion}
-To evaluate the accuracy of the classifiers, 10-fold stratified cross-validation is used and then compared to the Weka implementation of Naive Bayes and several other classification algorithms also with 10-fold stratified cross-validation. The results are tabulated above. The stratified cross-validation is performed on the feature values, which are the normalised weighted tf-idf scores of each top 200 word by document frequency. To simplify computation, these feature values are not recalculated for each fold.\\
+To evaluate the accuracy of the classifiers, 10-fold stratified cross-validation is used and then compared to the \emph{Weka} implementation of Naive Bayes and several other classification algorithms also with 10-fold stratified cross-validation. The results are tabulated above. The stratified cross-validation is performed on the feature values, which are the normalised weighted tf-idf scores of each top 200 word by document frequency. To simplify computation, these feature values are not recalculated for each fold.\\
 
-As a result, the feature values of the training data will be influenced by the validation data. This difference would not be significant, as the size of the validation data is 9 times smaller, hence its contribution to any given word's document frequency would be 9 times smaller as well. The effect of this is the classifier might perform slightly better than the case where the feature scores are calculated from only the training data. The above comparisons are still valid, as the Weka data input also consists of the same feature scores, therefore having a similar accuracy bias.\\
+As a result, the feature values of the training data will be influenced by the validation data. This difference would not be significant, as the size of the validation data is 9 times smaller, hence its contribution to any given word's document frequency would be 9 times smaller as well. The effect of this is the classifier might perform slightly better than the case where the feature scores are calculated from only the training data. The above comparisons are still valid, as the \emph{Weka} data input also consists of the same feature scores, therefore having a similar accuracy bias.\\
 
 \subsubsection{Comparisons}
 The accuracy of Naive Bayes and Weka's Naive Bayes are very similar for both the body and subject corpora. This is expected, as both implementations are performing training and validation on the same transformed data. There is a small difference of about 1\% accuracy between Weka's and our implementation of Naive Bayes. This variation is because Weka performed its own stratified cross-validation by generating its own randomised stratified subsets.\\
@@ -215,10 +215,10 @@ The prediction accuracy on the subject and body corpora vary significantly. The 
 
 For the subject corpus, despite having lower accuracies across all the classifiers (not counting Zero Rule), the statistical algorithms, Naive Bayes and DT scored particularly low; not much better than the Zero Rule baseline, because of the effectively reduced sample size and hence increased error variance. On the other hand, the geometric classifiers such as Support Vector Machine and 1-Nearest Neigbour algorithms performed much better, achieving accuracies of around 80\%, suggesting the classes are highly linearly separable in the 200-dimension feature space. \\
 \section{Extension}
-Stemming and another feature selection method, Categorical Proportional Difference (CPD) are implemented as the extension. 
+Stemming and Categorical Proportional Difference (CPD) are implemented as the extension. 
 \subsection{Stemming}
-[definition of stemming] The simple solution, using a suffix list will yeild results with a low accuracy. For instance, if \emph{wand} and \emph{wander} occur in the document, the suffix \emph{er} will get erronously stemmed, as it is not a suffix, but part of the stem. Conversely in the case of \emph{probe} and \emph{probate}, despite having the same stem, the words have quite different meanings and should not be stemmed. In light of this, the implementation of stemming used is the Porter Stemming Algorithm. General lexicographical rules are devised to progressively remove suffixes from words. \\
-There are few cases the algorith does not cover such as \emph{indices} and \emph{index}, but these cases are sufficiently rare in real vocabularies to not warrant the specific rules. The results from stratified 10-fold cross validation are shown below and is compared with the earlier Naive Bayes result from above.\\
+Stemming is the process of reducing words to their base form. The simple solution, removing suffixes using a suffix list will yeild results with a low accuracy. For instance, if \emph{wand} and \emph{wander} occur in the document, the suffix \emph{er} will get erronously stemmed, as it is not a suffix, but part of the stem. Conversely in the case of \emph{probe} and \emph{probate}, despite having the same stem, the words have quite different meanings and should not be stemmed. In light of this, the implementation of stemming used is the Porter Stemming Algorithm\footnote{Porter: http://tartarus.org/martin/PorterStemmer/def.txt}. General lexicographical rules are devised to progressively remove suffixes from words. \\
+There are few cases the algorith does not cover such as \emph{indices} and \emph{index}, but these cases are sufficiently rare in real vocabularies to not warrant the specific rules. The results from stratified 10-fold cross validation are shown below and are compared with non-stemmed Naive Bayes from the previous section.\\
 
 \begin{tabular}{ | l | l | l | }
 \hline
@@ -230,12 +230,17 @@ Body & 93 & 94 \\ \hline
 There is a significant increase in accuracy for the subject corpora and a marginal increase in the body corpus (and a corresponding accuracy increase in Weka's implementation of Naive Bayes). Stemming removes correlation between the factors by combining them. For example, in this report, the occurence of the word \emph{stem} is highly correlated with the occurence of the word \emph{stemming}, if one word appears in a document, it is likely the other word would appear also. Such a factor would act as a confounding factor and violate the independence of factors assumption inherent in Naive Bayes.
 
 \subsection{CPD}
-\begin{tabular}{ | l | l | l | }
+CPD is a feature selection model, an alternative to simply selecting the top 200 words by document frequency, is a number between -1 and 1 measuring the degree to which a word contributes to differentiating a particular class from another class. Formally, it is the difference in occurences of the word in spam and nonspam documents divided by the total number of occurences of the word. A CPD near -1 indicates the word occurs equally across both classes.\footnote{Simeon: http://129.96.12.107/confpapers/CRPITV87Simeon.pdf} A CPD of 1 indiciates the word occurs only in documents of one class. The 200 words with the highest CPD (instead of document frequency) are chosen. That is, the 200 words that contribute most towards differentiating spam from nonspam are chosen. The results from stratified 10-fold cross validation using CPD feature selection and CPD feature selection with stemming are shown below.\\
+
+\begin{tabular}{ | l | l | l | l |}
 \hline
-Corpus & Accuracy[\%] & Accuracy after CPD[\%]\\ \hline
-Subject & 70 & 80  \\ \hline
-Body & 93 & 94 \\ \hline
+Corpus & Accuracy[\%] & With CPD[\%] & With CPD and stemming[\%]\\ \hline
+Subject & 70 & 77.5 & 79 \\ \hline
+Body & 93 & 94 & 94 \\ \hline
 \end{tabular} \\\\
+
+As with stemming, there is a significant increase in accuracy for the subject corpus(70\% vs. 77.5\%). Choosing more differentiating features would have the biggest impact when the sample has fewer words. The accuracy increase is almost insignificant for the body corpus (93\% vs. 94\%), where CPD assigns high value to words that occurs rarely, but only in one class and a lower value to words that occur much more often, which may be slightly less differentiating and could be a better choice.\\
+When the two extension strategies are combined, the accuracies improve only marginally, if at all. This is because performing stemming "combines" words, reducing (or keeping the same, but never increasing) the degree to which the stem word contributes to the differetiating of a class. Therefore any increase in accuracy gained by stemming (which reduces correlation between factors) is at least partially mitigated by poorer factor choice, as stemming alters the differentiating amount of a word.
 
 \section{Conclusions and Next Steps}
 The Naive Bayes algorithm was able to classify emails into the two classes spam or nonspam very well with an accuracy of 93\% using only the text of the body. Similar results for other classification algorithms, especially 1-Nearest Neighbour and Support Vector Machine suggest the two classes are linearly separate in the 200-dimensional feature space. The algorith performs much worse on the subject corpus because there is much less text from which to build the model and to to make a prediction.\\
@@ -243,9 +248,5 @@ Further investigation may be made into the effect of varying the number of selec
 
 \section{Reflection}
 Over the course of this assignment, I was able to solve(predict with a high degree of accuracy) a deceptively simple real-world problem through the application of machine learning algorithms. I was impressed how the algorithms I implemented (Naive Bayes, stemming and CPD) can easily be adapted to make predictions for any text classification problem without any domain-specific knowledge. Even more generally, Naive Bayes can be used on any sort of regression problem involving any number of explanatory variables; numeric, categorical or some combination thereof (though some variable selection and transformation must be performed in some cases to ensure factors are roughly orthogonal).
-
-
-\bibliographystyle{plainnat}
-\bibliography{bib}
 
 \end{document}

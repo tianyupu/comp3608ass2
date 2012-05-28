@@ -71,11 +71,11 @@ class Corpus(object):
         word = match.group(0).lower()
         if word in self.STOPWORDS:
           self.removed.append(word)
+          self.words.add_word(word, fname)
           continue
         if stem:
           p = PorterStemmer()
           word = p.stem(word, 0, len(word)-1)
-        self.words.add_word(word, fname)
 
 class Word(object):
   def __init__(self, word, fname):
@@ -194,6 +194,7 @@ class WordList(object):
     else:
       word_obj = Word(word, fname)
       self.words[word] = word_obj
+    word_obj.update_clscount(fname)
 
   def get_words(self):
     """Get all the words in this list as a Python list of strings."""

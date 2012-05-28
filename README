@@ -1,0 +1,8 @@
+To run:
+
+In terminal, in the comp3608ass2 folder type
+"python main.py data/lingspam 200"
+200 := number of folds
+data/lingspam := data directory
+
+The weighted feature csv files are already generated, but to generate all the data files again, in main.py uncomment the indicated lines.
